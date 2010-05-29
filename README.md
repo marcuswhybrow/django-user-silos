@@ -8,7 +8,7 @@ Django User Silos is the solution to a specific problem. When creating [MyUni](h
 
 In addition we wanted to maintain each students original university wide username and password. This is achieved through a custom authentication backend, however the users of the system (the students and lectures) will need to be represented as objects in Django at some point.
 
-Here arises the problem. Two different universities may have conflicting usernames. THe problem is a simple one to identify put more complicated to amend.
+Here arises the problem. Two different universities may have conflicting usernames. The problem is a simple one to identify put more complicated to amend.
 
 The Solution
 ------------
