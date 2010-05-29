@@ -63,7 +63,6 @@ class AuthenticationForm(forms.Form):
     """
     username = forms.CharField(label=_("Username"), max_length=30)
     password = forms.CharField(label=_("Password"), widget=forms.PasswordInput)
-    silo = forms.ModelChoiceFielf(label=_("Silo"), queryset=Silo.obejcts.all())
 
     def __init__(self, silo, request=None, *args, **kwargs):
         """
@@ -108,7 +107,7 @@ class PasswordResetForm(forms.Form):
     
     def __init__(self, silo, *args, **kwargs):
         self.silo = silo
-        super(UserCreationForm, self).__init__(*args, **kwargs)
+        super(PasswordRestForm, self).__init__(*args, **kwargs)
 
     def clean_email(self):
         """
