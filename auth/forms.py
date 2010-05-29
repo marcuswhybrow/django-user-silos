@@ -21,11 +21,15 @@ class UserCreationForm(forms.ModelForm):
     class Meta:
         model = User
         fields = ("username",)
+        
+    def __init__(self, silo, *args, **kwargs):
+        self.silo = silo
+        super(UserCreationForm, self).__init__(*args, **kwargs)
 
     def clean_username(self):
         username = self.cleaned_data["username"]
         try:
-            User.objects.get(username=username)
+            User.objects.get(username=username, silo=self.silo)
         except User.DoesNotExist:
             return username
         raise forms.ValidationError(_("A user with that username already exists."))
@@ -59,14 +63,16 @@ class AuthenticationForm(forms.Form):
     """
     username = forms.CharField(label=_("Username"), max_length=30)
     password = forms.CharField(label=_("Password"), widget=forms.PasswordInput)
+    silo = forms.ModelChoiceFielf(label=_("Silo"), queryset=Silo.obejcts.all())
 
-    def __init__(self, request=None, *args, **kwargs):
+    def __init__(self, silo, request=None, *args, **kwargs):
         """
         If request is passed in, the form will validate that cookies are
         enabled. Note that the request (a HttpRequest object) must have set a
         cookie with the key TEST_COOKIE_NAME and value TEST_COOKIE_VALUE before
         running this validation.
         """
+        self.silo = silo
         self.request = request
         self.user_cache = None
         super(AuthenticationForm, self).__init__(*args, **kwargs)
@@ -76,9 +82,9 @@ class AuthenticationForm(forms.Form):
         password = self.cleaned_data.get('password')
 
         if username and password:
-            self.user_cache = authenticate(username=username, password=password)
+            self.user_cache = authenticate(username=username, password=password, silo=self.silo)
             if self.user_cache is None:
-                raise forms.ValidationError(_("Please enter a correct username and password. Note that both fields are case-sensitive."))
+                raise forms.ValidationError(_("Please enter a correct username and password, and select a silo. Note that both username and password are case-sensitive."))
             elif not self.user_cache.is_active:
                 raise forms.ValidationError(_("This account is inactive."))
 
@@ -99,15 +105,19 @@ class AuthenticationForm(forms.Form):
 
 class PasswordResetForm(forms.Form):
     email = forms.EmailField(label=_("E-mail"), max_length=75)
+    
+    def __init__(self, silo, *args, **kwargs):
+        self.silo = silo
+        super(UserCreationForm, self).__init__(*args, **kwargs)
 
     def clean_email(self):
         """
         Validates that a user exists with the given e-mail address.
         """
         email = self.cleaned_data["email"]
-        self.users_cache = User.objects.filter(email__iexact=email)
+        self.users_cache = User.objects.filter(email__iexact=email, silo=self.silo)
         if len(self.users_cache) == 0:
-            raise forms.ValidationError(_("That e-mail address doesn't have an associated user account. Are you sure you've registered?"))
+            raise forms.ValidationError(_("That e-mail address doesn't have an associated user account in the specified silo. Are you sure are registered within that silo?"))
         return email
 
     def save(self, domain_override=None, email_template_name='registration/password_reset_email.html',
@@ -132,6 +142,7 @@ class PasswordResetForm(forms.Form):
                 'user': user,
                 'token': token_generator.make_token(user),
                 'protocol': use_https and 'https' or 'http',
+                'silo': silo,
             }
             send_mail(_("Password reset on %s") % site_name,
                 t.render(Context(c)), None, [user.email])

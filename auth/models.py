@@ -42,6 +42,9 @@ def check_password(raw_password, enc_password):
 
 class Silo(models.Model):
     name = models.CharField(max_length=100)
+    
+    def __unicode__(self):
+        return self.name
 
 class SiteProfileNotAvailable(Exception):
     pass
