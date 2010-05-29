@@ -40,6 +40,9 @@ def check_password(raw_password, enc_password):
     algo, salt, hsh = enc_password.split('$')
     return hsh == get_hexdigest(algo, salt, raw_password)
 
+class Silo(models.Model):
+    name = models.CharField(max_length=100)
+
 class SiteProfileNotAvailable(Exception):
     pass
 
@@ -206,11 +209,13 @@ class User(models.Model):
     groups = models.ManyToManyField(Group, verbose_name=_('groups'), blank=True,
         help_text=_("In addition to the permissions manually assigned, this user will also get all permissions granted to each group he/she is in."))
     user_permissions = models.ManyToManyField(Permission, verbose_name=_('user permissions'), blank=True)
+    silo = models.ForeignKey(Silo, verbose_name=_('silo'), help_text=_('Required. The silo this user should be in.'))
     objects = UserManager()
 
     class Meta:
         verbose_name = _('user')
         verbose_name_plural = _('users')
+        unique_together = (('username', 'silo'),)
 
     def __unicode__(self):
         return self.username
