@@ -5,13 +5,13 @@
 from django.conf.urls.defaults import *
 
 urlpatterns = patterns('',
-    (r'^login/$', 'django.contrib.auth.views.login'),
-    (r'^logout/$', 'django.contrib.auth.views.logout'),
-    (r'^password_change/$', 'django.contrib.auth.views.password_change'),
-    (r'^password_change/done/$', 'django.contrib.auth.views.password_change_done'),
-    (r'^password_reset/$', 'django.contrib.auth.views.password_reset'),
-    (r'^password_reset/done/$', 'django.contrib.auth.views.password_reset_done'),
-    (r'^reset/(?P<uidb36>[0-9A-Za-z]+)-(?P<token>.+)/$', 'django.contrib.auth.views.password_reset_confirm'),
-    (r'^reset/done/$', 'django.contrib.auth.views.password_reset_complete'),
+    (r'^login/$', 'silos.auth.views.login'),
+    (r'^logout/$', 'silos.auth.views.logout'),
+    (r'^password_change/$', 'silos.auth.views.password_change'),
+    (r'^password_change/done/$', 'silos.auth.views.password_change_done'),
+    (r'^password_reset/$', 'silos.auth.views.password_reset'),
+    (r'^password_reset/done/$', 'silos.auth.views.password_reset_done'),
+    (r'^reset/(?P<uidb36>[0-9A-Za-z]+)-(?P<token>.+)/$', 'silos.auth.views.password_reset_confirm'),
+    (r'^reset/done/$', 'silos.auth.views.password_reset_complete'),
 )
 
